@@ -1,2 +1,5 @@
 model/*
 *.pyc
+explore.ipynb
+__pycache__
+data/combinded.csv

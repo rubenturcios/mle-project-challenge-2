@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    command: ["fastapi", "run", "app/main.py", "--port", "80"]
+    hostname: app
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/main.py
+          target: /code/app
+
+  model:
+    build: .
+    command: ["fastapi", "run", "app/model.py", "--port", "80"]
+    hostname: model
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/model.py
+          target: /code/model    
+  nginx:
+    build: ./nginx
+    ports:
+    - '8008:80'
+    depends_on:
+    - app
+    - model
