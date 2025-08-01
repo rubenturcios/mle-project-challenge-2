@@ -1,20 +1,20 @@
-import json
-import sys
-
-sys.path.append("../src")
+import logging
+import os
 
 import gradio as gr
 import pandas as pd
 import requests
 
-from src.utils import get_logger
+from constants import LOG_LEVEL_ENV
 
 
 EXAMLES_FILE = "/Users/rubenturcios/Repos/mle-project-challenge-2/data/future_unseen_examples.csv"
 INVOCATION_URL = "http://localhost:8008/invoke"
 
-
-logger = get_logger(__name__)
+format = '%(levelname)s:%(filename)s:%(lineno)d:%(asctime)s:%(message)s'
+logging.basicConfig(format=format)
+logger = logging.getLogger(__name__)
+logger.setLevel(level=os.getenv(LOG_LEVEL_ENV, "INFO"))
 
 
 def get_examples_df(example_file: str = EXAMLES_FILE) -> pd.DataFrame:
