@@ -17,11 +17,22 @@ services:
       watch:
         - action: rebuild
           path: ./src/model.py
-          target: /code/model    
+          target: /code/model
+
+  model-2:
+    build: .
+    command: ["fastapi", "run", "app/model.py", "--port", "80"]
+    hostname: model-2
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/model.py
+          target: /code/model
+
   nginx:
     build: ./nginx
+    container_name: nginx
     ports:
     - '8008:80'
     depends_on:
     - app
-    - model

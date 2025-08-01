@@ -9,7 +9,7 @@ from constants import ADD_DATA_LOCATION_ENV, MODEL_ENDPOINT_ENV
 from utils import get_logger
 
 
-MODEL_ENDPOINT = os.getenv(MODEL_ENDPOINT_ENV, "http://model:80/predict")
+MODEL_ENDPOINT = os.getenv(MODEL_ENDPOINT_ENV, "http://nginx:81/predict")
 ADD_DATA_LOCATION = os.getenv(ADD_DATA_LOCATION_ENV, "data/zipcode_demographics.csv")
 
 app = FastAPI()
@@ -26,6 +26,12 @@ def get_examples_with_add_data(examples: list[dict]) -> list[dict]:
 @app.get("/")
 def read_root() -> str:
     return f"This is the {socket.gethostname()} endpoint."
+
+
+@app.get("/check-model-host")
+def get_model_hostname() -> str:
+    response = requests.get(MODEL_ENDPOINT.replace("predict", ""))
+    return response.content
 
 
 @app.post("/invoke")

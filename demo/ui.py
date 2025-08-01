@@ -1,7 +1,7 @@
 import json
 import sys
 
-sys.path.append("./src")
+sys.path.append("../src")
 
 import gradio as gr
 import pandas as pd
