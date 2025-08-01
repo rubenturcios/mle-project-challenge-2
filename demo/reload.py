@@ -95,11 +95,6 @@ def reload_nginx(conf_path: str, container_name: str = "nginx") -> None:
     return print("Nginx configuration updated and reloaded successfully.")
 
 
-def reload_env_file(env_file_path: str, model_hostname: str) -> None:
-    with open(env_file_path, "w") as file:
-        file.write(f"MODEL_ENDPOINT_ENV={model_hostname}")
-
-
 if __name__ == "__main__":
     args: Args = parse_args()
 
@@ -110,4 +105,3 @@ if __name__ == "__main__":
     )
     print(update_conf(NGINX_CONF_PATH, content))
     reload_nginx(NGINX_CONF_PATH, args.nginx_name)
-    reload_env_file(args.env_file_path, args.model_hostname)
