@@ -28,8 +28,7 @@ def predict(examples: list[dict]) -> list[int | float]:
         logger.info("Model loaded successfully.")
 
     examples_formatted = [
-        row[1].to_list() for row in 
-        pd.DataFrame(examples)[model.feature_names_in_].iterrows()
+        row[1]for row in pd.DataFrame(examples)[model.feature_names_in_].iterrows()
     ]
 
     logger.info(examples_formatted)
