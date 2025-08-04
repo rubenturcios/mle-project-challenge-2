@@ -3,34 +3,6 @@ services:
     build: .
     image: 127.0.0.1:5000/app
     command: ["fastapi", "run", "app/main.py", "--port", "80"]
-    #hostname: app
-    #develop:
-    #  watch:
-    #    - action: rebuild
-    #      path: ./src/main.py
-    #      target: /code/app
-
-  model:
-    build: .
-    image: 127.0.0.1:5000/model
-    command: ["fastapi", "run", "app/model.py", "--port", "80"]
-    #hostname: model
-    #develop:
-    #  watch:
-    #    - action: rebuild
-    #      path: ./src/model.py
-    #      target: /code/model
-
-  model-2:
-    build: .
-    image: 127.0.0.1:5000/model-2
-    command: ["fastapi", "run", "app/model.py", "--port", "80"]
-    #hostname: model-2
-    #develop:
-    #  watch:
-    #    - action: rebuild
-    #      path: ./src/model.py
-    #      target: /code/model
 
   nginx:
     build: ./nginx
@@ -40,3 +12,8 @@ services:
     - '8008:80'
     depends_on:
     - app
+
+  model:
+    build: .
+    image: 127.0.0.1:5000/model
+    command: ["fastapi", "run", "app/model.py", "--port", "80"]

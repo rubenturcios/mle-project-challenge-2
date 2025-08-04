@@ -4,6 +4,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Protocol
 import os
 import subprocess
+from tempfile import NamedTemporaryFile
 
 
 NGINX_CONF_PATH = os.getenv("NGINX_CONF_PATH", "nginx/nginx.conf")
@@ -72,11 +73,6 @@ def parse_args() -> Namespace:
     return parser.parse_args()
 
 
-def update_conf(conf_path: str, conf_contents: str) -> int:
-    with open(conf_path, "w") as file:
-        return file.write(conf_contents)
-
-
 def reload_nginx(conf_path: str, container_name: str = "nginx") -> None:
     print("Copying Nginx configuration to the container...")
     result = subprocess.run(
@@ -103,5 +99,9 @@ if __name__ == "__main__":
       model_hostname=args.model_hostname,
       port=int(args.port)
     )
-    print(update_conf(NGINX_CONF_PATH, content))
-    reload_nginx(NGINX_CONF_PATH, args.nginx_name)
+
+    with NamedTemporaryFile("w+t", delete=False) as tmp_file:
+        tmp_file.write(content)
+        tmp_file.close()
+        reload_nginx(tmp_file.name, args.nginx_name)
+        os.remove(tmp_file.name)

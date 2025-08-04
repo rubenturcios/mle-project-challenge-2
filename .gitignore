@@ -1,4 +1,5 @@
 model/*
+plots/
 *.pyc
 explore.ipynb
 __pycache__
