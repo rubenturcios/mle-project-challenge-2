@@ -9,14 +9,14 @@ from constants import ADD_DATA_LOCATION_ENV, MODEL_ENDPOINT_ENV
 from utils import get_logger
 
 
-MODEL_ENDPOINT = os.getenv(MODEL_ENDPOINT_ENV, "http://nginx:81/predict")
+MODEL_ENDPOINT = os.getenv(MODEL_ENDPOINT_ENV, "http://app-main_nginx:81/predict")
 ADD_DATA_LOCATION = os.getenv(ADD_DATA_LOCATION_ENV, "data/zipcode_demographics.csv")
 
 app = FastAPI()
 logger = get_logger(__name__)
 
 
-def get_examples_with_add_data(examples: list[dict]) -> list[dict]:
+def add_demo_data(examples: list[dict]) -> list[dict]:
     ex_df = pd.DataFrame(examples)
     add_df = pd.read_csv(ADD_DATA_LOCATION)
     total_data = ex_df.merge(add_df, on=['zipcode'])
@@ -36,7 +36,7 @@ def get_model_hostname() -> str:
 
 @app.post("/invoke")
 def read_item(examples: list[dict]) -> list[int | float]:
-    formatted_examples = get_examples_with_add_data(examples)
+    formatted_examples = add_demo_data(examples)
     logger.info(formatted_examples)
 
     response = requests.post(MODEL_ENDPOINT, json=formatted_examples)

@@ -110,26 +110,26 @@ make a prediction, in the order they were passed during training.
 
 1. Deploy the model as an endpoint on a RESTful service which receives JSON
    POST data.
-    - The inputs to this endpoint should be the columns in
+    - ✅ The inputs to this endpoint should be the columns in
     `data/future_unseen_examples.csv`.
     - The endpoint should return a JSON object
     with a prediction from the model, as well as any metadata you see as
      necessary.
-    - The inputs to the endpoint **should not** include any of the demographic
+    - ✅ The inputs to the endpoint **should not** include any of the demographic
     data from the `data/zipcode_demographics.csv` table.  Your service should
      add this data on the backend.
     - Consider how your solution would scale as more users call the API.
     If possible, design a solution that allows scaling up or scaling down of API
      resources without stopping the service.  You don't have to actually
      implement autoscaling, but be prepared to talk about how you would.
-    - Consider how updated versions of the model will be deployed.
+    - ✅ Consider how updated versions of the model will be deployed.
     If possible, develop a solution that allows new versions of the model to be
      deployed without stopping the service.
     - Bonus: the basic model only uses a subset of the columns provided in the
        house sales data.
         Create an additional API endpoint where only the required features have
         to be provided in order to get a prediction.
-2. Create a test script which submits examples to the endpoint to demonstrate
+2. ✅ Create a test script which submits examples to the endpoint to demonstrate
 its behavior.  The examples should be taken from
 `data/future_unseen_examples.csv`.
 This script does not have to be complicated, only needs to demonstrate
@@ -139,11 +139,11 @@ in `create_model.py` and try to figure out how well the model will generalize
 to new data.  Has the model appropriately fit the dataset?
 
 ## Recommendations
-- We recommend using [Docker](https://docs.docker.com/get-started/) to
+- ✅ We recommend using [Docker](https://docs.docker.com/get-started/) to
 containerize and deploy the model.
 However, feel free to use a different technology if there is one you are
 more familiar with.
-- In addition to Docker, you'll need to use several other components to create
+- ✅ In addition to Docker, you'll need to use several other components to create
 a scalable REST API. Google is your friend here, do some web searching to
 figure out what other components are needed to deploy a scaleable REST API
 for a Python application.

@@ -60,7 +60,7 @@ def parse_args() -> Namespace:
         default=80
     )
     parser.add_argument(
-        "--nginx-name",
+        "--nginx-name", "-n",
         action="store",
         default="nginx"
     )
