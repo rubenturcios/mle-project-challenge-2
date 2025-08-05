@@ -9,11 +9,7 @@ function main() {
     echo "$(curl -s http://localhost:8008/check-model-host)"
 
     echo "Spinning up a new model container..."
-    docker run --network mle-project-challenge-2_default --name model-2 -d 127.0.0.1:5000/model fastapi run app/model.py --port 80
-
-    echo "\n"
-    docker ps
-    echo "\n"
+    docker run --network mle-project-challenge-2_default -e MODEL_FILE=model/model.pkl --name model-2 -d 127.0.0.1:5000/model fastapi run app/model.py --port 80
 
     echo "\nSwitching model container..."
     ./demo/reload.py -m model-2
