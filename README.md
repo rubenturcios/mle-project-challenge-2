@@ -125,7 +125,7 @@ make a prediction, in the order they were passed during training.
     - ✅ Consider how updated versions of the model will be deployed.
     If possible, develop a solution that allows new versions of the model to be
      deployed without stopping the service.
-    - ⚠️ Bonus: the basic model only uses a subset of the columns provided in the
+    - ✅ Bonus: the basic model only uses a subset of the columns provided in the
        house sales data.
         Create an additional API endpoint where only the required features have
         to be provided in order to get a prediction.

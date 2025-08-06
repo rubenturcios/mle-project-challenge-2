@@ -4,7 +4,9 @@ services:
     image: 127.0.0.1:5000/model
     command: ["fastapi", "run", "app/model.py", "--port", "80"]
     networks:
-    - proxy
+      - proxy
+    volumes:
+      - ../model:/code/model
 
 networks:
   proxy:

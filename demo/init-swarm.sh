@@ -24,7 +24,7 @@ function main() {
     echo "$(curl -s http://localhost:8008/check-model-host)"
 
     echo "\nSpinning up new model service..."
-    docker service create --network proxy --name model_2 --env MODEL_FILE=model/model.pkl 127.0.0.1:5000/model:latest fastapi run app/model.py --port 80
+    docker service create --network proxy --name model_2 --env MODEL_FILE=model/model.pkl --mount 'type=bind,source=./model,target=/code/model' 127.0.0.1:5000/model:latest fastapi run app/model.py --port 80
 
     echo "\nCreating new nginx conf file..."
     sed -e 's/model:/model_2:/g' ./nginx/nginx.conf > ./nginx/temp.conf
@@ -54,6 +54,7 @@ function destroy() {
 
     Echo "Autoscaling demo complete."
 }
+
 
 if [[ -z "$1" ]]; then
     init

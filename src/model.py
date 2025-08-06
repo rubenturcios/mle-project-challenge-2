@@ -1,12 +1,16 @@
 import socket
 import os
 import pickle
+from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 import pandas as pd
+import numpy as np
 from sklearn.pipeline import Pipeline
+from shap import Explainer
 
 from constants import MODEL_FILE_ENV
+from types_ import ModelResponse, TooManyFeatureErrors
 from utils import get_logger
 
 
@@ -22,14 +26,13 @@ def read_root() -> str:
 
 
 @app.post("/predict")
-def predict(examples: list[dict]) -> list[int | float]:
+def predict(samples: dict | list[dict]) -> ModelResponse:
     with open(f"{os.getcwd()}/{MODEL_FILE}", "rb") as file:
         model: Pipeline = pickle.load(file)
         logger.info("Model loaded successfully.")
 
-    examples_formatted = [
-        row[1]for row in pd.DataFrame(examples)[model.feature_names_in_].iterrows()
-    ]
-
-    logger.info(examples_formatted)
-    return model.predict(examples_formatted)
+    if isinstance(samples, dict):
+        samples_df = pd.DataFrame([samples])
+    else:
+        samples_df = pd.DataFrame(samples)
+    return {'results': model.predict(samples_df)}

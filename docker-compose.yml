@@ -5,15 +5,12 @@ services:
     command: ["fastapi", "run", "app/main.py", "--port", "80"]
     volumes:
       - ./data:/code/data
-
-  nginx:
-    build: ./nginx
-    image: 127.0.0.1:5000/nginx
-    container_name: nginx
-    ports:
-      - '8008:80'
-    depends_on:
-      - app
+      - ./model/model_features.json:/code/model/model_features.json
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/main.py
+          target: /code/main.py
 
   model:
     build: .
@@ -21,3 +18,18 @@ services:
     command: ["fastapi", "run", "app/model.py", "--port", "80"]
     volumes:
       - ./model:/code/model
+    develop:
+      watch:
+        - action: rebuild
+          path: ./src/model.py
+          target: /code/model
+
+  nginx:
+    build: ./nginx
+    image: 127.0.0.1:5000/nginx
+    container_name: nginx
+    ports:
+      - '8008:80'
+      - '8080:81'
+    depends_on:
+      - app

@@ -5,3 +5,4 @@ explore.ipynb
 __pycache__
 data/combinded.csv
 .DS_Store
+.env
