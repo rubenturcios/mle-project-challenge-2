@@ -1,0 +1,1 @@
+{"kneighborsregressor__metric": "euclidean", "kneighborsregressor__n_neighbors": 7, "kneighborsregressor__weights": "distance"}
