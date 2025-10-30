@@ -136,4 +136,4 @@ if __name__ == "__main__":
     if args.mlflow:
         mlflow_save()
     else:
-        save
+        save()
