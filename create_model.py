@@ -1,3 +1,5 @@
+import argparse
+from typing import Protocol
 import json
 import pathlib
 import pickle
@@ -5,6 +7,8 @@ from typing import List
 from typing import Tuple
 
 import pandas
+import mlflow
+from mlflow.models import infer_signature
 from sklearn import model_selection
 from sklearn import neighbors
 from sklearn import pipeline
@@ -66,7 +70,7 @@ def load_data(
     return x, y
 
 
-def main():
+def save():
     """Load data, train model, and export artifacts."""
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
     x_train, _x_test, y_train, _y_test = model_selection.train_test_split(x, y, random_state=42)
@@ -88,5 +92,48 @@ def main():
     json.dump(list(x_train.columns), open(output_dir / "model_features.json", 'w'))
 
 
+def mlflow_save() -> None:
+    with mlflow.start_run():
+        x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
+        x_train, _x_test, y_train, _y_test = model_selection.train_test_split(x, y, random_state=42)
+
+        model = (
+            pipeline
+            .make_pipeline(
+                preprocessing.RobustScaler(),
+                neighbors.KNeighborsRegressor()
+            )
+            .fit(x_train, y_train)
+        )
+
+        signature = infer_signature(x_train, model.predict(x_train))
+
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            name="model",
+            signature=signature,
+            registered_model_name="Test",
+            input_example=x_train[:5],  # Sample input for documentation
+        )
+
+
+class Args(Protocol):
+    mlflow: bool
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--mlflow",
+        action="store_true",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    main()
+    args: Args = parse_args()
+
+    if args.mlflow:
+        mlflow_save()
+    else:
+        save

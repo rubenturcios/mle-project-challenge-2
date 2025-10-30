@@ -1,0 +1,15 @@
+creation_timestamp: 1761858448776
+current_stage: None
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1761858448776
+model_id: m-a362cf1deee94a52bd79567c6f2feb8a
+name: Test
+run_id: 54e12127cd364e62826ba77eeb1f78ae
+run_link: null
+source: models:/m-a362cf1deee94a52bd79567c6f2feb8a
+status: READY
+status_message: null
+storage_location: file:///Users/rubenturcios/Repos/mle-project-challenge-2/mlruns/0/models/m-a362cf1deee94a52bd79567c6f2feb8a/artifacts
+user_id: null
+version: 1

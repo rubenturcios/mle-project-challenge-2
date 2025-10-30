@@ -1,0 +1,10 @@
+artifact_location: file:///Users/rubenturcios/Repos/mle-project-challenge-2/mlruns/0/models/m-763c35fbd7db4d16a18dc5a097f1dbf0/artifacts
+creation_timestamp: 1761858205224
+experiment_id: '0'
+last_updated_timestamp: 1761858206965
+model_id: m-763c35fbd7db4d16a18dc5a097f1dbf0
+model_type: null
+name: model
+source_run_id: f5b16c094b7248579755efdfed1c4a81
+status: 2
+status_message: null

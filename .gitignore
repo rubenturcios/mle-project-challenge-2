@@ -1,4 +1,4 @@
-model/*
+*.pkl
 plots/
 *.pyc
 explore.ipynb
