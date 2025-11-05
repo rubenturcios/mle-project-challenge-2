@@ -5,6 +5,7 @@ import pathlib
 import pickle
 from typing import List
 from typing import Tuple
+from os import getenv
 
 import pandas
 import mlflow
@@ -15,9 +16,9 @@ from sklearn import pipeline
 from sklearn import preprocessing
 
 
-SALES_PATH = "data/kc_house_data.csv"  # path to CSV with home sale data
-DEMOGRAPHICS_PATH = "data/kc_house_data.csv"  # path to CSV with demographics
-
+SALES_PATH = getenv('TRAIN_PATH_ENV', 'data/kc_house_data.csv')
+VALIDATION_PATH = getenv('VALIDATION_PATH_ENV', 'data/future_unseen_examples.csv')
+DEMOGRAPHICS_PATH = getenv('ADD_DATA_PATH_ENV', 'data/zipcode_demographics.csv')
 # List of columns (subset) that will be taken from home sale data
 SALES_COLUMN_SELECTION = [
     'price',
@@ -123,10 +124,7 @@ class Args(Protocol):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--mlflow",
-        action="store_true",
-    )
+    parser.add_argument("--mlflow", action="store_true")
     return parser.parse_args()
 
 
