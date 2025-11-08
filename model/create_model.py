@@ -7,13 +7,18 @@ from typing import List
 from typing import Tuple
 from os import getenv
 
-import pandas
+import pandas as pd
 import mlflow
 from mlflow.models import infer_signature
-from sklearn import model_selection
-from sklearn import neighbors
-from sklearn import pipeline
-from sklearn import preprocessing
+from sklearn import (
+    model_selection,
+    neighbors,
+    pipeline,
+    preprocessing
+)
+from sklearn.metrics import root_mean_squared_error
+from scipy.stats import ks_2samp
+from prefect import flow, task
 
 
 SALES_PATH = getenv('TRAIN_PATH_ENV', 'data/kc_house_data.csv')
@@ -34,11 +39,16 @@ SALES_COLUMN_SELECTION = [
 OUTPUT_DIR = "model"  # Directory where output artifacts will be saved
 
 
+class Args(Protocol):
+    mlflow: bool
+
+
+@task
 def load_data(
     sales_path: str, 
     demographics_path: str,
     sales_column_selection: List[str]
-) -> Tuple[pandas.DataFrame, pandas.Series]:
+) -> Tuple[pd.DataFrame, pd.Series]:
     """Load the target and feature data by merging sales and demographics.
 
     Args:
@@ -53,13 +63,14 @@ def load_data(
         series contains the target variable (home sale price).
 
     """
-    data = pandas.read_csv(
+
+    data = pd.read_csv(
         sales_path,
         usecols=sales_column_selection,
         dtype={'zipcode': str}
     )
-    demographics = pandas.read_csv(
-        "data/zipcode_demographics.csv",
+    demographics = pd.read_csv(
+        demographics_path,
         dtype={'zipcode': str}
     )
     merged_data = data.merge(demographics, how="left", on="zipcode").drop(columns="zipcode")
@@ -71,7 +82,26 @@ def load_data(
     return x, y
 
 
-def save():
+@task
+def detect_drift(
+    df_train: pd.DataFrame,
+    df_val: pd.DataFrame,
+    feature: str = "price"
+) -> bool:
+    train_duration = df_train[feature].values
+    val_duration = df_val[feature].values
+    ks_stat, p_value = ks_2samp(train_duration, val_duration)
+    mlflow.log_metric("ks_statistic", ks_stat)
+    mlflow.log_metric("p_value", p_value)
+    print(f"Drift KS statistic: {ks_stat}, p-value: {p_value}")
+    drift_threshold = 0.05  # Threshold for KS statistic
+    needs_retraining = ks_stat > drift_threshold
+    print(f"Model needs retraining: {needs_retraining}")
+    return needs_retraining
+
+
+@flow
+def save() -> None:
     """Load data, train model, and export artifacts."""
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
     x_train, _x_test, y_train, _y_test = model_selection.train_test_split(x, y, random_state=42)
@@ -93,10 +123,16 @@ def save():
     json.dump(list(x_train.columns), open(output_dir / "model_features.json", 'w'))
 
 
+@flow
 def mlflow_save() -> None:
     with mlflow.start_run():
         x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
-        x_train, _x_test, y_train, _y_test = model_selection.train_test_split(x, y, random_state=42)
+        (
+            x_train,
+            _x_test,
+            y_train,
+            _y_test
+        ) = model_selection.train_test_split(x, y, random_state=42)
 
         model = (
             pipeline
@@ -116,10 +152,6 @@ def mlflow_save() -> None:
             registered_model_name="Test",
             input_example=x_train[:5],  # Sample input for documentation
         )
-
-
-class Args(Protocol):
-    mlflow: bool
 
 
 def parse_args() -> argparse.Namespace:
